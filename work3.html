@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WORK3:  VueJS + VuetifyJS</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuetify@3.4.10/dist/vuetify.min.css">
+    <style>
+        .card
+        {
+            box-shadow: 0 0 10px #BEADFA;
+        }
+        .title
+        {
+            color: #fff;
+            background-color: #BEADFA;
+        }
+        .name 
+        {
+            font-size: 22px;
+            font-weight: 500;
+            text-shadow: 0 0 5px #D0BFFF;
+        }
+        .start
+        {
+            color: #FFF8C9;
+            font-size: 16px;
+            background-color: #D0BFFF;
+        }
+        .stop
+        {
+            color: #fff;
+            background-color: #D50000;
+        }
+        .ok
+        {
+            color: #FFF8C9;
+            font-size: 16px;
+            background-color: #D0BFFF;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <v-app>
+            <v-container>
+                <v-card class="card" style="max-width: 800px; margin: 0 auto;">
+                    <v-card-title class="title">{{title}}</v-card-title>
+                    <v-card-text class="pa-4 text-center">
+
+                        <template v-if="state==0">
+                            <v-btn class="start" @click='shuffle()'>Start</v-btn>
+                        </template>
+
+                        <template v-if="state==1">
+
+                            <v-row>
+                                <v-col v-for="(c,i) of cards" cols="2" class="text-center">
+                                    <img v-if='c.s==0' src="./work3/0.png" width="80" height="80" @click='imgclick(c)'>
+                                    <img v-if='c.s==1' :src="'work3/'+c.t+'.png'" width="80">
+                                </v-col>
+                            </v-row>
+                            <v-btn class="stop" @click="state=0">Stop</v-btn>
+                        </template>
+
+                        <template v-if="state==2">
+                            <h1>You Win!!!</h1>
+                            <br>
+                            <v-btn class="ok" @click="state=0">OK</v-btn>
+                        </template>
+
+                    </v-card-text>
+                    <b-bottom-navigaion class="bg-grev text-center">
+                        <div class="name">{{footer}}</div>
+                    </b-bottom-navigaion>
+                </v-card>
+            </v-container>
+        </v-app>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@3.4.10/dist/vuetify.min.js"></script>
+
+    <script>
+        const vuetify = Vuetify.createVuetify();
+        const app = Vue.createApp({
+            data() {
+                return {
+                    title : "Work 3 : Image matching game using Vue JS",
+                    footer : "Sasikarn Pawawichan 643021338-6 Com-sci",
+                    state : 0,
+                    cards : [],
+                    cards_opened : [],
+                    cards_count : 0,
+                };
+            },
+            methods: {
+                shuffle() {
+                    this.state = 1;
+                    this.cards = [];
+                    this.cards_opened = [];
+                    this.cards_count = 36;
+
+                    for (var i = 1; i <= 18; i++){
+                        this.cards.push({ t: i, s: 0 });
+                        this.cards.push({ t: i, s: 0 });
+                    }
+                    for (var i = 1; i < 100; i++) {
+                        var a = Math.round(Math.random() * 35);
+                        var b = Math.round(Math.random() * 35);
+                        var t = this.cards[a];
+                        this.cards[a] = this.cards[b];
+                        this.cards[b] = t;
+                    }
+                },
+                imgclick(c) {
+                    if (this.cards_opened.length < 2) {
+                        c.s = 1;
+                        this.cards_opened.push(c);
+
+                        if (this.cards_opened.length == 2) {
+                            setTimeout(this.checkCard,1000);
+                        }
+                    }
+                },
+                checkCard() {
+                    var a = this.cards_opened[0];
+                    var b = this.cards_opened[1];
+                    this.cards_opened = [];
+
+                    if (a.t == b.t) {
+                        a.s = 2;
+                        b.s = 2;
+                        this.cards_count -= 2;
+                    }else {
+                        a.s = 0;
+                        b.s = 0;
+                    }
+                    if (this.cards_count == 0){
+                        this.state = 2;
+                    }
+                }
+            },
+        });
+
+        app.use(vuetify).mount("#app");
+
+    </script>
+</body>
+
+</html>
